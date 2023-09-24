@@ -1,0 +1,36 @@
+const { Analysis } = require('@tago-io/sdk');
+const token = '64ee8f30596b3e000f439398'; //Account ID
+
+// Initialize the Analysis class with your API token
+const analysis = new Analysis({ token });
+
+// Define the parameters for fetching data
+const deviceId = '650b820287e7e6001020972a'; // Replace with your device's ID
+const variableName = 'distancia'; // Replace with the variable name you want to retrieve
+
+// Create a query to fetch the last data point
+const query = {
+    query: `variable == "${variableName}"`, // Filter by variable name
+    qty: 1, // Fetch only 1 data point (the last one)
+    sort: 'desc', // Sort in descending order (latest first)
+  };
+  
+// Function to fetch and process data
+async function fetchDataFromTago() {
+    try {
+      const data = await analysis.getData(deviceId, query);
+      if (data && data.result.length > 0) {
+        const lastDataPoint = data.result[0];
+        console.log('Last Data Point:', lastDataPoint);
+      } else {
+        console.log('No data points found for the specified variable.');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+  
+  // Schedule the data fetching task to run every 3 seconds
+  setInterval(() => {
+    fetchDataFromTago();
+  }, 3000); // 3000 milliseconds (3 seconds)
